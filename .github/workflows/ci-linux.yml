@@ -21,7 +21,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: amplibot-linux64
-        path: target
+        path: target/release
     - name: Cache build files
       uses: actions/cache/save@v3
       with:
