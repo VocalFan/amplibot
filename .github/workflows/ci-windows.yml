@@ -1,0 +1,33 @@
+name: CI (Windows)
+on:
+  workflow_call:
+jobs:
+  build:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+    - name: Create Build Key
+      run: echo "build=${{ runner.os }}-build-files-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}" >> $env:GITHUB_OUTPUT
+      id: build-key
+    - name: Restore build files
+      uses: actions/cache/restore@v3
+      with:
+        path: target
+        key: ${{ steps.build-key.outputs.build }}
+    - name: Build
+      run: cargo build --release
+    - name: Run Clippy
+      run: cargo clippy --release
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: amplibot-win64
+        path: target
+    - name: Cache build files
+      uses: actions/cache/save@v3
+      with:
+        path: target
+        key: ${{ steps.build-key.outputs.build }}-${{ github.run_id }}
+      if: startsWith(github.ref, 'refs/heads/')

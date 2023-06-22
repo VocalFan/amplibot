@@ -1,0 +1,22 @@
+name: PR Build
+on:
+  pull_request:
+    branches:
+    - '*'
+concurrency: pr-${{ github.ref }}
+jobs:
+  quality-checks:
+    name: Pre-Build
+    uses: ./.github/workflows/qc-prebuild.yml
+  windows:
+    needs: quality-checks
+    name: Build
+    uses: ./.github/workflows/ci-windows.yml
+  mac:
+    needs: quality-checks
+    name: Build
+    uses: ./.github/workflows/ci-mac.yml
+  linux:
+    needs: quality-checks
+    name: Build
+    uses: ./.github/workflows/ci-linux.yml
