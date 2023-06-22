@@ -8,14 +8,11 @@ jobs:
     steps:
     - name: Checkout source
       uses: actions/checkout@v3
-    - name: Create Build Key
-      run: echo "build=${{ runner.os }}-build-files-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}" >> $env:GITHUB_OUTPUT
-      id: build-key
     - name: Restore build files
       uses: actions/cache/restore@v3
       with:
         path: target
-        key: ${{ steps.build-key.outputs.build }}
+        key: ${{ runner.os }}-build-files-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}
     - name: Build
       run: cargo build --release
     - name: Run Clippy
@@ -29,5 +26,5 @@ jobs:
       uses: actions/cache/save@v3
       with:
         path: target
-        key: ${{ steps.build-key.outputs.build }}-${{ github.run_id }}
+        key: ${{ runner.os }}-build-files-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-${{ github.run_id }}
       if: startsWith(github.ref, 'refs/heads/')
